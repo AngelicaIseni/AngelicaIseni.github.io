@@ -21,13 +21,6 @@
     }
     canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
     .card { position: relative; z-index: 1; max-width: 400px; width: 100%; text-align: center; }
-    .handle {
-      font-family: 'Special Elite', monospace;
-      font-size: 14px;
-      letter-spacing: 3px;
-      color: #8a8885;
-      margin-bottom: 10px;
-    }
     h1 {
       font-family: 'Special Elite', monospace;
       font-weight: normal;
@@ -75,6 +68,7 @@
       margin-bottom: 14px;
       padding: 14px;
       border: 1px solid #e8e6e3;
+      background: rgba(10,10,11,0.6);
       color: #e8e6e3;
       text-decoration: none;
       font-family: 'Special Elite', monospace;
@@ -94,9 +88,8 @@
     <div class="mystery" id="mystery">0.0.0.0</div>
 
     <div class="secret" id="secret">
-      <blockquote>“The most merciful thing in the world, I think, is the inability of the human mind to correlate all its contents. 
-        We live on a placid island of ignorance in the midst of black seas of infinity, and it was not meant that we should voyage far.”</blockquote>
-      <div class="author"> H. P. LOVECRAFT</div>
+      <blockquote>“La cosa più misericordiosa al mondo, credo, è l'incapacità della mente umana di mettere in correlazione tutti i suoi contenuti.”</blockquote>
+      <div class="author">— H. P. LOVECRAFT</div>
     </div>
 
     <div class="links">
@@ -112,32 +105,34 @@
 
     const c = document.getElementById('rain');
     const ctx = c.getContext('2d');
-    let drops = [];
+    const size = 16;
+    let cols = [];
     function resize() {
       c.width = innerWidth; c.height = innerHeight;
-      drops = Array.from({ length: Math.floor(innerWidth / 6) }, () => ({
-        x: Math.random() * c.width,
-        y: Math.random() * c.height,
-        l: 8 + Math.random() * 14,
-        v: 4 + Math.random() * 6
-      }));
+      ctx.fillStyle = '#0a0a0b';
+      ctx.fillRect(0, 0, c.width, c.height);
+      cols = Array.from({ length: Math.ceil(c.width / size) },
+        () => Math.floor(Math.random() * -c.height / size));
     }
-    function draw() {
-      ctx.clearRect(0, 0, c.width, c.height);
-      ctx.strokeStyle = 'rgba(200,200,205,0.18)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      for (const d of drops) {
-        ctx.moveTo(d.x, d.y);
-        ctx.lineTo(d.x - 1, d.y + d.l);
-        d.y += d.v;
-        if (d.y > c.height) { d.y = -d.l; d.x = Math.random() * c.width; }
-      }
-      ctx.stroke();
+    let last = 0;
+    function draw(t) {
       requestAnimationFrame(draw);
+      if (t - last < 70) return;
+      last = t;
+      ctx.fillStyle = 'rgba(10,10,11,0.18)';
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.font = size + 'px "Special Elite", monospace';
+      cols.forEach((y, i) => {
+        const ch = Math.random() < 0.5 ? '0' : '1';
+        ctx.fillStyle = Math.random() < 0.03
+          ? 'rgba(232,230,227,0.6)'
+          : 'rgba(200,200,205,0.18)';
+        ctx.fillText(ch, i * size, y * size);
+        cols[i] = (y * size > c.height && Math.random() > 0.975) ? 0 : y + 1;
+      });
     }
     addEventListener('resize', resize);
-    resize(); draw();
+    resize(); requestAnimationFrame(draw);
   </script>
 </body>
 </html>
