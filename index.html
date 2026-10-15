@@ -1,1 +1,143 @@
-<h1>Ciao, sono Angelica!</h1>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Angie</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital@0;1&family=Special+Elite&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #0a0a0b;
+      color: #e8e6e3;
+      font-family: 'Cormorant Garamond', serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 20px;
+      overflow-x: hidden;
+    }
+    canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+    .card { position: relative; z-index: 1; max-width: 400px; width: 100%; text-align: center; }
+    .handle {
+      font-family: 'Special Elite', monospace;
+      font-size: 14px;
+      letter-spacing: 3px;
+      color: #8a8885;
+      margin-bottom: 10px;
+    }
+    h1 {
+      font-family: 'Special Elite', monospace;
+      font-weight: normal;
+      font-size: 44px;
+      margin: 0 0 36px;
+      letter-spacing: 2px;
+    }
+    .mystery {
+      font-family: 'Special Elite', monospace;
+      font-size: 30px;
+      letter-spacing: 8px;
+      cursor: pointer;
+      user-select: none;
+      animation: flicker 4s infinite;
+    }
+    @keyframes flicker {
+      0%, 92%, 100% { opacity: 1; }
+      93% { opacity: 0.3; }
+      94% { opacity: 1; }
+      96% { opacity: 0.5; }
+      97% { opacity: 1; }
+    }
+    .secret {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height .8s ease, opacity .8s ease, margin .8s ease;
+      margin: 0;
+    }
+    .secret.show { max-height: 260px; opacity: 1; margin-top: 24px; }
+    .secret blockquote {
+      margin: 0 0 10px;
+      font-size: 20px;
+      font-style: italic;
+      line-height: 1.45;
+    }
+    .secret .author {
+      font-size: 14px;
+      letter-spacing: 2px;
+      color: #8a8885;
+    }
+    .links { margin-top: 44px; }
+    a.link {
+      display: block;
+      margin-bottom: 14px;
+      padding: 14px;
+      border: 1px solid #e8e6e3;
+      color: #e8e6e3;
+      text-decoration: none;
+      font-family: 'Special Elite', monospace;
+      font-size: 15px;
+      letter-spacing: 3px;
+      transition: background .25s, color .25s;
+    }
+    a.link:hover { background: #e8e6e3; color: #0a0a0b; }
+  </style>
+</head>
+<body>
+  <canvas id="rain"></canvas>
+
+  <div class="card">
+    <div class="handle">_november_rain__</div>
+    <h1>Angie</h1>
+
+    <div class="mystery" id="mystery">0.0.0.0</div>
+
+    <div class="secret" id="secret">
+      <blockquote>“La cosa più misericordiosa al mondo, credo, è l'incapacità della mente umana di mettere in correlazione tutti i suoi contenuti.”</blockquote>
+      <div class="author">— H. P. LOVECRAFT</div>
+    </div>
+
+    <div class="links">
+      <a class="link" href="https://github.com/AngelicaIseni">GITHUB</a>
+      <a class="link" href="https://open.spotify.com/user/nsi5acdq7ku8ss0yplp42rszi">SPOTIFY</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('mystery').addEventListener('click', () => {
+      document.getElementById('secret').classList.toggle('show');
+    });
+
+    const c = document.getElementById('rain');
+    const ctx = c.getContext('2d');
+    let drops = [];
+    function resize() {
+      c.width = innerWidth; c.height = innerHeight;
+      drops = Array.from({ length: Math.floor(innerWidth / 6) }, () => ({
+        x: Math.random() * c.width,
+        y: Math.random() * c.height,
+        l: 8 + Math.random() * 14,
+        v: 4 + Math.random() * 6
+      }));
+    }
+    function draw() {
+      ctx.clearRect(0, 0, c.width, c.height);
+      ctx.strokeStyle = 'rgba(200,200,205,0.18)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (const d of drops) {
+        ctx.moveTo(d.x, d.y);
+        ctx.lineTo(d.x - 1, d.y + d.l);
+        d.y += d.v;
+        if (d.y > c.height) { d.y = -d.l; d.x = Math.random() * c.width; }
+      }
+      ctx.stroke();
+      requestAnimationFrame(draw);
+    }
+    addEventListener('resize', resize);
+    resize(); draw();
+  </script>
+</body>
+</html>
